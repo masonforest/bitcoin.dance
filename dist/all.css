@@ -1,0 +1,19 @@
+h1 {
+  text-align: center;
+}
+
+.preview {
+  width: 360px;
+  margin: 20px auto;
+  position: relative;
+}
+
+.preview img, .preview canvas {
+  display: block;
+  margin: 0 auto;
+}
+
+.preview canvas {
+  position: absolute;
+  top: 0;
+}
