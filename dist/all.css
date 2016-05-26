@@ -2,10 +2,23 @@ h1 {
   text-align: center;
 }
 
+@font-face {
+  font-family: monogram;
+  src: url('./fonts/three-character-circle.ttf');
+}
+
+.monogram {
+  font-family: monogram;
+  font-size: 10em;
+  position: absolute;
+  top: -200px
+}
 .preview {
   width: 360px;
-  margin: 20px auto;
+  margin: 40px auto;
   position: relative;
+  /* top: 253px; */
+  /* left: -241px; */
 }
 
 .preview img, .preview canvas {
@@ -15,5 +28,5 @@ h1 {
 
 .preview canvas {
   position: absolute;
-  top: 0;
+  top: 22px;
 }
