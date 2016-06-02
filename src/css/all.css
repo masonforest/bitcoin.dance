@@ -21,6 +21,18 @@ h1 {
   /* left: -241px; */
 }
 
+.checkbox {
+  width: 260px;
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0 auto;
+}
+
+.switchery {
+  position: relative;
+  top: -6px !important;
+}
+
 .preview img, .preview canvas {
   display: block;
   margin: 0 auto;
