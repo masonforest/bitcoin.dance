@@ -1,112 +1,45 @@
-h1 {
-  text-align: center;
+html, body {
+    height: 100%;
+}
+body {
+    margin: 0;
 }
 
-@font-face {
-  font-family: monogram;
-  src: url('./fonts/three-character-circle.ttf');
-}
-
-.monogram {
-  font-family: monogram;
-  font-size: 10em;
+.info {
   position: absolute;
-  top: -200px
+  top: 10px;
+  right: 10px;
 }
-.preview {
-  width: 360px;
-  margin: 40px auto;
-  position: relative;
-  /* top: 253px; */
-  /* left: -241px; */
-}
-
-.checkbox {
-  width: 260px;
-  font-size: 2em;
-  font-weight: bold;
-  margin: 0 auto;
+.address-container {
+  height: 900px;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.switchery {
-  position: relative;
-  top: -6px !important;
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
-.preview img, .preview canvas {
-  display: block;
-  margin: 0 auto;
+.note {
+  font-size: 10px;
 }
 
-.preview canvas {
-  position: absolute;
-  top: 22px;
+body {
+  background-color: #000;
+  color: #fff;
 }
 
-/*
- *
- * Main stylesheet for Switchery.
- * http://abpetkov.github.io/switchery/
- *
- */
-
-/* Switchery defaults. */
-
-.switchery {
-  background-color: #fff;
-  border: 1px solid #dfdfdf;
-  border-radius: 20px;
-  cursor: pointer;
-  display: inline-block;
-  height: 30px;
-  position: relative;
-  vertical-align: middle;
-  width: 50px;
-
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-
-  -webkit-box-sizing: content-box;
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
-
-  -webkit-background-clip: content-box;
-  background-clip: content-box;
+.address {
+  font-size: 3em;
+  font-family: sans-serif;
 }
 
-.switchery > small {
-  background: #fff;
-  border-radius: 100%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-  height: 30px;
-  position: absolute;
-  top: 0;
-  width: 30px;
-}
-
-/* Switchery sizes. */
-
-.switchery-small {
-  border-radius: 20px;
-  height: 20px;
-  width: 33px;
-}
-
-.switchery-small > small {
-  height: 20px;
-  width: 20px;
-}
-
-.switchery-large {
-  border-radius: 40px;
-  height: 40px;
-  width: 66px;
-}
-
-.switchery-large > small {
-  height: 40px;
-  width: 40px;
+.badge {
+  margin: 10px;
 }

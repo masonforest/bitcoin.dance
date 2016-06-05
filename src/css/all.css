@@ -1,44 +1,45 @@
-h1 {
-  text-align: center;
+html, body {
+    height: 100%;
+}
+body {
+    margin: 0;
 }
 
-@font-face {
-  font-family: monogram;
-  src: url('./fonts/three-character-circle.ttf');
-}
-
-.monogram {
-  font-family: monogram;
-  font-size: 10em;
+.info {
   position: absolute;
-  top: -200px
+  top: 10px;
+  right: 10px;
 }
-.preview {
-  width: 360px;
-  margin: 40px auto;
-  position: relative;
-  /* top: 253px; */
-  /* left: -241px; */
-}
-
-.checkbox {
-  width: 260px;
-  font-size: 2em;
-  font-weight: bold;
-  margin: 0 auto;
+.address-container {
+  height: 900px;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.switchery {
-  position: relative;
-  top: -6px !important;
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
-.preview img, .preview canvas {
-  display: block;
-  margin: 0 auto;
+.note {
+  font-size: 10px;
 }
 
-.preview canvas {
-  position: absolute;
-  top: 22px;
+body {
+  background-color: #000;
+  color: #fff;
+}
+
+.address {
+  font-size: 3em;
+  font-family: sans-serif;
+}
+
+.badge {
+  margin: 10px;
 }

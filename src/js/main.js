@@ -1,79 +1,81 @@
+var address = "14xEPWuHC3ybPMfv8iTZZ29UCLTUSoJ8HL";
+var socket = new WebSocket('wss://ws.blockchain.info/inv');
+var giphyApiKey = "dc6zaTOxFJmzC";
+var giphyEnpoint = "http://api.giphy.com/v1/gifs/random";
+var giphyTag = "dance";
+
+
+window.dancing = false;
+window.total = 0;
+
 $(function(){
-  console.log("done")
-  WebFont.load({
-    active: function() {
-      init();
-    },
-    custom: {
-      families: ['monogram'],
-      urls: [ './all.css']
+  socket.onopen = function(){
+    socket.send(JSON.stringify({"op":"addr_sub", "addr": address}));
+  };
+
+  socket.onmessage = function(message){
+    var transaction = JSON.parse(message.data);
+    window.total = window.total + value(transaction);
+    setTotal(window.total);
+
+    if(!window.dancing){
+      dance();
     }
-  });
+  }
+
+  loadInfo();
 });
-function init() {
-  var elem = document.querySelector('input[type=checkbox]');
-  $('input[type=checkbox]').each(function(checkbox){
-    var init = new Switchery(this);
+
+function loadInfo() {
+  $.get("https://blockchain.info/q/getreceivedbyaddress/"
+    + address, function(total){
+      window.total = parseInt(total)
+      setTotal(total)
   });
-  scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera( 30, 1, 1, 1000 );;
-  camera.position.z = 89
-  scene.add(camera);
-  geometry = new THREE.CylinderGeometry(12, 12, 20, 100, 100, true); // Cone
+}
 
-  var texture = new THREE.Texture(renderMonogram("aB3"));
-  texture.needsUpdate = true;
-
-  THREE.ImageUtils.crossOrigin = '';
-  material = new THREE.MeshBasicMaterial({
-    map: texture,
-    overdraw: true
-  })
-
-  mesh = new THREE.Mesh(geometry, material);
-  mesh.rotation.y = 325 * Math.PI / 180;
-
-  scene.add(mesh);
-  renderer = new THREE.WebGLRenderer({alpha: true});
-  renderer.setClearColor( 0x000000, 0 );
-  renderer.setSize(360, 240);
-  el = renderer.domElement;
-  el.setAttribute("id", "overlay")
-  document.body.appendChild(el);
-  var f = document.getElementsByClassName("preview")[0];
-  f.appendChild(el);
-  render();
-  animate();
-
-  function renderMonogram(text) {
-    var camera, scene, renderer, geometry, material, mesh;
-    var text3d;
-
-    var canvas = document.createElement('canvas');;
-
-    canvas.width = 2150;
-    canvas.height = 320;
-    var ctx = canvas.getContext("2d");
-    ctx.font = "400px monogram";
-    ctx.fillStyle="#333333";
-    var text = "aB3",
-        textWidth = ctx.measureText(text).width;
-    ctx.fillText(text, -32, 280);
-    var f = document.getElementsByClassName("preview")[0];
-    return canvas;
-  }
-
-
-  function animate() {
-    requestAnimationFrame(animate);
-    if($("input[type=checkbox]").is(":checked")) {
-      render();
+function value(transaction) {
+  return (_.sum(_.map(transaction.x.out,
+    function(v) {
+      if(v.addr == address) {
+        return v.value
+      } else {
+        return 0
+      }
     }
-  }
+  )))
+}
 
-  function render()
-  {
-    mesh.rotation.y += 0.02;
-    renderer.render( scene, camera );
-  }
+function setTotal(total) {
+  $(".amount-btc").text((total/100000000).toFixed(2))
+  $.get("https://blockchain.info/q/24hrprice", function(exchangeRate) {
+    $(".amount-usd").text(accounting.formatMoney((total*exchangeRate/100000000)))
+  });
+}
+
+function dance() {
+  window.dancing = true;
+  $.get(giphyEnpoint +
+        '?api_key=' + giphyApiKey +
+        '&tag=' + giphyTag,
+    function(res){
+      $(".address-container").append("<img class=giphy style=\"display: none\" src=" + res.data.image_url + "></img>")
+    }
+  )
+
+  $(".address").fadeOut(2000, function(){
+    window.dancing = true
+    $(".giphy").fadeIn(2000)
+    var audio = new Audio('sounds/sandstorm.ogg')
+    audio.play()
+    audio.ontimeupdate = function(){
+      if(audio.currentTime > 27 ) {
+        $(".giphy").fadeOut(2000, function() {
+          $(".address").fadeIn(2000, function() {
+            window.dancing = false
+          })
+        })
+      }
+    }
+  })
 }

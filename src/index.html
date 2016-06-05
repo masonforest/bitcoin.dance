@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <title>RamblerOn WebGL Preview Demo</title>
+  <title>Bitcoin.Dance</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -11,32 +11,25 @@
   <link rel="stylesheet" href="./all.css">
 </head>
 <body>
-  <div class="container">
-
-    <div class="page-header">
-      <h1 class="text-center">RamblerOn WebGL Preview Demo</h1>
-    </div>
-    <form>
-      <div class="checkbox">
-        <label>
-          <input type="checkbox">
-          Spin
-        </label>
-      </div>
-    </form>
-    <div class="preview">
-      <img src="./images/20oz-rambler.jpg" />
-    </div>
-    <div style="font-family: monogram; position: relative; left: -9999px">.<div>
+  <div class="info">
+    <div>Currently Dontating To: <a href="https://thewaterproject.org/">The Water Project</a></div>
+    <div>Total Donated: <span class="amount-btc">0</span> BTC (<span class="amount-usd">0</span> USD)</div>
+    <div class="note">Note: Not all donations originated from bitcoin.dance</div>
   </div>
-  <script>
+  <div class="container">
+    <div class="address-container">
+      <div class="address">14xEPWuHC3ybPMfv8iTZZ29UCLTUSoJ8HL</div>
+   </div>
+  <a href="https://api.giphy.com/" target="_blank"><img class="badge" src="images/giphy.png"></img></a>
+   <a class="badge" href="https://itunes.apple.com/us/album/sandstorm-ep/id251130083" target="_blank"><img src="https://linkmaker.itunes.apple.com/images/badges/en-us/badge_music-lrg.svg" style="width:109px"></a>
+  <div>Hosted by <a href=https://surge.sh/" target="_blank">surge.sh</a> </div><a href="https://surge.sh/" target="_blank"><img src="images/surge-logo.svg" class="badge" style="width: 50px"></img></a>
+  </div>
+  <!-- <script>
     document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')
-  </script>
+  </script> -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r77/three.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.3.2/js/tether.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/webfont/1.6.24/webfontloader.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.13.1/lodash.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/accounting.js/0.4.1/accounting.js"></script>
   <script src="all.js"></script>
 </body>
 </html>
