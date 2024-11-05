@@ -178,7 +178,7 @@ function App() {
                 value="Create Payment"
               />
             </form>
-            {paymentLink&& <div class="mt-2"> <b>Copy And Send Link: <input class="form-control rounded-3" value={paymentLink} /></b></div>}
+            {paymentLink&& <div class="d-flex flex-row mt-2"><input class="form-control rounded-3" value={paymentLink} /> <CopyToClipboardButton text={paymentLink} /></div>}
           </Tab.Pane>
         </Tab.Content>
         <footer className="page-footer fixed-bottom border-top d-flex align-items-center">
