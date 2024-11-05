@@ -6,8 +6,4 @@ import './index.css'
 import { Buffer } from 'buffer'
 globalThis.Buffer = Buffer
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+createRoot(document.getElementById('root')).render(<App />)

@@ -18,13 +18,9 @@ const STABLE_NODES = import.meta.env.PROD ?
 async function sweepWallet(privateKey, depositAddress) {
   const publicKey = secp256k1.getPublicKey(privateKey, true)
   const { address, redeemScript, witnessScript,script } = btc.p2wpkh(secp256k1.getPublicKey(privateKey, true));
-  console.log(depositAddress)
-  console.log(address)
   const transaction = new btc.Transaction()
         let inputs = (await (await fetch(`https://mempool.space/api/address/${depositAddress}/utxo`)).json()).filter((({value}) => value > 546 ));
-        console.log(inputs)
         for (const input of inputs) {
-          console.log(input.txid, input.vout, BigInt(input.value), script)
           transaction.addInput({
             txid: input.txid,
             index: input.vout,
@@ -38,14 +34,10 @@ async function sweepWallet(privateKey, depositAddress) {
         transaction.addOutputAddress(STABLE_MULTI_SIG_ADDRESS, BigInt(input.value) - 1000n)
         transaction.sign(privateKey)
         transaction.finalize()
-        // transaction.sign(privateKey)
-        console.log("--")
-        console.log(transaction.hex)
         
 }
 function App() {
   const stable = new StableNetwork({development: import.meta.env.DEV})
-  // console.log(stable.depositAddress)
   const mnemonic = useMemo(
   () => {
     if (!localStorage.mnemonic) {
@@ -58,12 +50,6 @@ function App() {
   const depositAddress = useMemo(
     () =>{ 
   const {publicKey} = HDKey.fromMasterSeed(bip39.mnemonicToEntropy(mnemonic, wordlist)).derive("m/84'/0'/0'")
-      // Import required libraries
-
-console.log(bytesToHex(publicKey))
-console.log(bytesToHex(btc.p2pkh(publicKey).script))
-console.log(bytesToHex(btc.p2wsh(btc.p2pkh(publicKey)).script))
-// return btc.p2sh(btc.p2wsh(btc.p2pkh(publicKey))).address
 return btc.p2wpkh(publicKey).address
 }
     ,

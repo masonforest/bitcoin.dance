@@ -672,10 +672,11 @@ to {
 
 
 .tab-content {
-  border-left: 1px solid #ddd;
-  border-right: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-  padding: 10px;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  padding: 0;
+  width: 100%;
 }
 
 .nav-tabs {
