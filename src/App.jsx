@@ -4,12 +4,15 @@ import { BorshSchema, borshSerialize, borshDeserialize, Unit } from "borsher";
 import Deposit from "./Deposit";
 import * as secp256k1 from "@noble/secp256k1";
 import { useInterval } from "react-use";
+import { QRCodeSVG } from "qrcode.react";
 import { sha256 } from "@noble/hashes/sha2";
 import StableNetwork from "./StableNetwork";
 import { wordlist } from "@scure/bip39/wordlists/english";
 import { base64urlnopad } from "@scure/base";
-import CopyToClipboardButton from './CopyToClipBoardButton';
+import CopyToClipboardButton from "./CopyToClipBoardButton";
 import * as bip39 from "@scure/bip39";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import { HDKey } from "@scure/bip32";
 import Col from "react-bootstrap/Col";
 import Nav from "react-bootstrap/Nav";
@@ -106,7 +109,7 @@ function App() {
     const { publicKey } = HDKey.fromMasterSeed(
       bip39.mnemonicToEntropy(mnemonic, wordlist),
     ).derive("m/84'/0'/0'");
-    console.log(Buffer.from(publicKey).toString("hex"))
+    console.log(Buffer.from(publicKey).toString("hex"));
     let usdBalance = await stable.getBalance(publicKey, "usd");
     setUsdBalance(usdBalance);
   }, 1000);
@@ -149,10 +152,10 @@ function App() {
       ),
     );
   }
+  const [showQrCodeModal, setShowQrCodeModal] = useState(false);
 
   return (
     <>
-
       <Tab.Container id="left-tabs-example" defaultActiveKey="send">
         <Tab.Content>
           <Tab.Pane eventKey="deposit">
@@ -160,25 +163,45 @@ function App() {
             <Deposit />
           </Tab.Pane>
           <Tab.Pane eventKey="send">
-          <h4 class="my-2 text-center fw-bold section-title"> Balance: {formatUsd(usdBalance)}</h4>
+            <h4 className="my-2 text-center fw-bold section-title">
+              {" "}
+              Balance: {formatUsd(usdBalance)}
+            </h4>
             <form onSubmit={send}>
-              <div class="form-floating">
+              <div className="form-floating">
                 <input
                   onChange={handleChange}
                   type="text"
-                  class="form-control rounded-3"
+                  className="form-control rounded-3"
                   id="floatingInputName"
                   placeholder="Name"
                 />
-                <label for="floatingInputName">Amount</label>
+                <label htmlFor="floatingInputName">Amount</label>
               </div>
               <input
-                class="btn btn-success w-100 mt-4"
+                className="btn btn-success w-100 mt-4"
                 type="submit"
                 value="Create Payment"
               />
             </form>
-            {paymentLink&& <div class="d-flex flex-row mt-2"><input class="form-control rounded-3" value={paymentLink} /> <CopyToClipboardButton text={paymentLink} /></div>}
+            {paymentLink && (
+              <>
+                <div className="d-flex flex-row mt-2">
+                  <input
+                    className="form-control rounded-3"
+                    value={paymentLink}
+                    readonly
+                  />
+                  <CopyToClipboardButton text={paymentLink} />
+                  <button
+                    className="btn btn-secondary mx-2"
+                    onClick={() => setShowQrCodeModal(true)}
+                  >
+                    Show QR Code
+                  </button>
+                </div>
+              </>
+            )}
           </Tab.Pane>
         </Tab.Content>
         <footer className="page-footer fixed-bottom border-top d-flex align-items-center">
@@ -204,6 +227,18 @@ function App() {
           </nav>
         </footer>
       </Tab.Container>
+      <Modal
+        show={showQrCodeModal}
+        fullscreen={"md-down"}
+        onHide={() => setShowQrCodeModal(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Sending...</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <QRCodeSVG size={460} value={paymentLink} />
+        </Modal.Body>
+      </Modal>
 
       {/* <footer className="page-footer fixed-bottom border-top d-flex align-items-center">
         <nav className="navbar navbar-expand p-0 flex-grow-1">
