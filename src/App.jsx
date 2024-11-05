@@ -236,7 +236,7 @@ function App() {
           <Modal.Title>Sending...</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <QRCodeSVG size={460} value={paymentLink} />
+          <QRCodeSVG size={420} value={paymentLink} />
         </Modal.Body>
       </Modal>
 
