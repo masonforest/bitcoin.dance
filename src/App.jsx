@@ -8,6 +8,7 @@ import { sha256 } from "@noble/hashes/sha2";
 import StableNetwork from "./StableNetwork";
 import { wordlist } from "@scure/bip39/wordlists/english";
 import { base64urlnopad } from "@scure/base";
+import CopyToClipboardButton from './CopyToClipBoardButton';
 import * as bip39 from "@scure/bip39";
 import { HDKey } from "@scure/bip32";
 import Col from "react-bootstrap/Col";
@@ -105,6 +106,7 @@ function App() {
     const { publicKey } = HDKey.fromMasterSeed(
       bip39.mnemonicToEntropy(mnemonic, wordlist),
     ).derive("m/84'/0'/0'");
+    console.log(Buffer.from(publicKey).toString("hex"))
     let usdBalance = await stable.getBalance(publicKey, "usd");
     setUsdBalance(usdBalance);
   }, 1000);
@@ -176,7 +178,7 @@ function App() {
                 value="Create Payment"
               />
             </form>
-            {paymentLink}
+            {paymentLink&& <div class="mt-2"> <b>Copy And Send Link: <input class="form-control rounded-3" value={paymentLink} /></b></div>}
           </Tab.Pane>
         </Tab.Content>
         <footer className="page-footer fixed-bottom border-top d-flex align-items-center">
