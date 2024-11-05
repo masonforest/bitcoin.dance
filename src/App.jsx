@@ -48,8 +48,10 @@ const transactionSchema = BorshSchema.Enum({
 const stable = new StableNetwork({ development: import.meta.env.DEV });
 
 function App() {
+  const [entropy, setEntropy] = useState(window.location.search.slice(1));
   const [inputValue, setInputValue] = useState("");
   const [paymentLink, setPaymentLink] = useState(null);
+  const [paymentLinkBalance, setPaymentLinkBalance] = useState(0n);
 
   const [usdBalance, setUsdBalance] = useState(0n);
   const handleChange = (event) => {
@@ -58,45 +60,46 @@ function App() {
 
   const [mnemonic, setMnemonic] = useState(localStorage.mnemonic || "");
 
-  useEffect(() => {
-    async function sweepPaymentLink(entropy) {
-      const { privateKey, publicKey: temporaryPublicKey } =
-        HDKey.fromMasterSeed(entropy).derive("m/84'/0'/0'");
-      const { publicKey } = HDKey.fromMasterSeed(
-        bip39.mnemonicToEntropy(mnemonic, wordlist),
-      ).derive("m/84'/0'/0'");
-      let value = await stable.getBalance(temporaryPublicKey, "usd");
+  const sweepPaymentLink = async () => {
+    const { privateKey, publicKey: temporaryPublicKey } = HDKey.fromMasterSeed(
+      base64urlnopad.decode(entropy),
+    ).derive("m/84'/0'/0'");
+    const { publicKey } = HDKey.fromMasterSeed(
+      bip39.mnemonicToEntropy(mnemonic, wordlist),
+    ).derive("m/84'/0'/0'");
+    let value = await stable.getBalance(temporaryPublicKey, "usd");
 
-      const transaction = borshSerialize(transactionSchema, {
-        Transfer: {
-          nonce: 0,
-          token_type: { Usd: {} },
-          to: publicKey,
-          value,
-        },
-      });
-      const signature = await secp256k1.signAsync(
-        sha256(transaction),
-        privateKey,
-      );
-      await stable.postTransaction(
-        secp256k1.etc.concatBytes(
-          transaction,
-          signature.toCompactRawBytes(),
-          new Uint8Array([signature.recovery]),
-        ),
-      );
-      history.pushState(
-        {},
-        "",
-        window.location.origin + window.location.pathname,
-      );
-    }
+    const transaction = borshSerialize(transactionSchema, {
+      Transfer: {
+        nonce: 0,
+        token_type: { Usd: {} },
+        to: publicKey,
+        value,
+      },
+    });
+    const signature = await secp256k1.signAsync(
+      sha256(transaction),
+      privateKey,
+    );
+    await stable.postTransaction(
+      secp256k1.etc.concatBytes(
+        transaction,
+        signature.toCompactRawBytes(),
+        new Uint8Array([signature.recovery]),
+      ),
+    );
+    history.pushState(
+      {},
+      "",
+      window.location.origin + window.location.pathname,
+    );
+    setEntropy(null);
+  };
 
-    if (window.location.search) {
-      sweepPaymentLink(base64urlnopad.decode(window.location.search.slice(1)));
-    }
-  }, []);
+  //   if (window.location.search) {
+  //     sweepPaymentLink(base64urlnopad.decode(window.location.search.slice(1)));
+  //   }
+  // }, []);
   useEffect(() => {
     if (!mnemonic) {
       const newMnemonic = bip39.generateMnemonic(wordlist);
@@ -104,6 +107,14 @@ function App() {
       setMnemonic(newMnemonic);
     }
   }, [mnemonic]);
+
+  useInterval(async () => {
+    if(!entropy) {return}
+    const { publicKey: temporaryPublicKey } = HDKey.fromMasterSeed(
+      base64urlnopad.decode(entropy),
+    ).derive("m/84'/0'/0'");
+    setPaymentLinkBalance(await stable.getBalance(temporaryPublicKey, "usd"));
+  }, 1000);
 
   useInterval(async () => {
     const { publicKey } = HDKey.fromMasterSeed(
@@ -237,6 +248,25 @@ function App() {
         </Modal.Header>
         <Modal.Body>
           <QRCodeSVG size={420} value={paymentLink} />
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        show={entropy}
+        fullscreen={"md-down"}
+        onHide={() => setShowQrCodeModal(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Sending...</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <button
+            onClick={() => sweepPaymentLink()}
+            className="btn btn-success btn-xlg w-100"
+          >
+            <title>Accept {formatUsd(paymentLinkBalance)} on the Stable Network</title>
+            Accept {formatUsd(paymentLinkBalance)}
+          </button>
         </Modal.Body>
       </Modal>
 
