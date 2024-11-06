@@ -109,7 +109,9 @@ function App() {
   }, [mnemonic]);
 
   useInterval(async () => {
-    if(!entropy) {return}
+    if (!entropy) {
+      return;
+    }
     const { publicKey: temporaryPublicKey } = HDKey.fromMasterSeed(
       base64urlnopad.decode(entropy),
     ).derive("m/84'/0'/0'");
@@ -136,9 +138,6 @@ function App() {
       temporaryMnemonic,
       wordlist,
     );
-    setPaymentLink(
-      `${window.location.href}?${base64urlnopad.encode(temporaryEntropy)}`,
-    );
     const { privateKey } = HDKey.fromMasterSeed(
       bip39.mnemonicToEntropy(mnemonic, wordlist),
     ).derive("m/84'/0'/0'");
@@ -162,6 +161,10 @@ function App() {
         new Uint8Array([signature.recovery]),
       ),
     );
+    setPaymentLink(
+      `${window.location.href}?${base64urlnopad.encode(temporaryEntropy)}`,
+    );
+    setShowQrCodeModal(true);
   }
   const [showQrCodeModal, setShowQrCodeModal] = useState(false);
 
@@ -182,6 +185,7 @@ function App() {
               <div className="form-floating">
                 <input
                   onChange={handleChange}
+                  value={inputValue}
                   type="text"
                   className="form-control rounded-3"
                   id="floatingInputName"
@@ -201,7 +205,7 @@ function App() {
                   <input
                     className="form-control rounded-3"
                     value={paymentLink}
-                    readonly
+                    readOnly
                   />
                   <CopyToClipboardButton text={paymentLink} />
                   <button
@@ -241,13 +245,26 @@ function App() {
       <Modal
         show={showQrCodeModal}
         fullscreen={"md-down"}
-        onHide={() => setShowQrCodeModal(false)}
+        onHide={() => {
+          setShowQrCodeModal(false);
+          setInputValue("");
+        }}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Sending...</Modal.Title>
+          <Modal.Title>
+            Sending{" "}
+            {inputValue &&
+              formatUsd(BigInt((parseFloat(inputValue) || 0) * 100))}
+            ...
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <QRCodeSVG size={400} value={paymentLink} />
+          <QRCodeSVG
+            width="100%"
+            height="100%"
+            size={400}
+            value={paymentLink}
+          />
         </Modal.Body>
       </Modal>
 
@@ -264,7 +281,9 @@ function App() {
             onClick={() => sweepPaymentLink()}
             className="btn btn-success btn-xlg w-100"
           >
-            <title>Accept {formatUsd(paymentLinkBalance)} on the Stable Network</title>
+            <title>
+              Accept {formatUsd(paymentLinkBalance)} on the Stable Network
+            </title>
             Accept {formatUsd(paymentLinkBalance)}
           </button>
         </Modal.Body>
