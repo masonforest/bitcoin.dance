@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+import React, { useState } from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
-function CopyToClipBoardButton({text}) {
+function CopyToClipBoardButton({ text }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -12,7 +12,9 @@ function CopyToClipBoardButton({text}) {
   return (
     <div>
       <CopyToClipboard text={text} onCopy={handleCopy}>
-        <button className="btn btn-secondary">{copied ? "Copied":"Copy to Clipboard"}</button>
+        <button className="btn btn-secondary">
+          {copied ? "Copied" : "Copy to Clipboard"}
+        </button>
       </CopyToClipboard>
     </div>
   );

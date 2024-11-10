@@ -2,6 +2,7 @@ import React, { useMemo, useEffect, useRef, useState } from "react";
 import * as borsh from "borsh";
 import { BorshSchema, borshSerialize, borshDeserialize, Unit } from "borsher";
 import Deposit from "./Deposit";
+import Withdraw from "./Withdraw";
 import * as secp256k1 from "@noble/secp256k1";
 import { useInterval } from "react-use";
 import { QRCodeSVG } from "qrcode.react";
@@ -176,6 +177,10 @@ function App() {
             {" "}
             <Deposit />
           </Tab.Pane>
+          <Tab.Pane eventKey="withdraw">
+            {" "}
+            <Withdraw />
+          </Tab.Pane>
           <Tab.Pane eventKey="send">
             <h4 className="my-2 text-center fw-bold section-title">
               {" "}
@@ -225,9 +230,17 @@ function App() {
               <Nav.Link eventKey="deposit">
                 <div className="d-flex flex-column align-items-center">
                   <div className="icon">
-                    <i className="bi bi-person"></i>
+                    <i className="bi bi-currency-dollar"></i>
                   </div>
                   <div className="name">Deposit</div>
+                </div>
+              </Nav.Link>
+              <Nav.Link eventKey="withdraw">
+                <div className="d-flex flex-column align-items-center">
+                  <div className="icon">
+                    <i className="bi bi-currency-bitcoin"></i>
+                  </div>
+                  <div className="name">Withdraw</div>
                 </div>
               </Nav.Link>
               <Nav.Link eventKey="send">
