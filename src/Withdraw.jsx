@@ -57,7 +57,7 @@ async function sweepWallet(privateKey, depositAddress) {
 const transactionSchema = BorshSchema.Enum({
   Transfer: BorshSchema.Struct({
     nonce: BorshSchema.i64,
-    token_type: BorshSchema.Enum({
+    currency: BorshSchema.Enum({
       Snt: BorshSchema.Unit,
       Usd: BorshSchema.Unit,
     }),
@@ -84,14 +84,23 @@ function Withdraw() {
 
     return localStorage.mnemonic;
   }, []);
-  useInterval(async () => {
-    const { publicKey } = HDKey.fromMasterSeed(
-      bip39.mnemonicToEntropy(mnemonic, wordlist),
-    ).derive("m/84'/0'/0'");
-    console.log(Buffer.from(publicKey).toString("hex"));
-    let usdBalance = await stable.getBalance(publicKey, "usd");
-    setUsdBalance(usdBalance);
-  }, 1000);
+  // useInterval(async () => {
+  //   const { publicKey } = HDKey.fromMasterSeed(
+  //     bip39.mnemonicToEntropy(mnemonic, wordlist),
+  //   ).derive("m/84'/0'/0'");
+  //   // console.log(Buffer.from(publicKey).toString("hex"));
+  //   let usdBalance = await stable.getBalance(publicKey, "usd");
+  //   console.log(usdBalance)
+  //   setUsdBalance(usdBalance);
+  // }, 1000);
+  // useInterval(async () => {
+  //   const { publicKey } = HDKey.fromMasterSeed(
+  //     bip39.mnemonicToEntropy(mnemonic, wordlist),
+  //   ).derive("m/84'/0'/0'");
+  //   console.log(Buffer.from(publicKey).toString("hex"));
+  //   let usdBalance = await stable.getUtxos(pubKeyToAddress(publicKey), "usd");
+  //   setUsdBalance(usdBalance);
+  // }, 1000);
   const depositAddress = useMemo(() => {
     const { publicKey } = HDKey.fromMasterSeed(
       bip39.mnemonicToEntropy(mnemonic, wordlist),
@@ -164,7 +173,7 @@ function Withdraw() {
     setInputValue("");
     setTransactionLink(`https://mempool.space/tx/${transactionId}`);
   }
-  console.log(usdBalance);
+  // console.log(usdBalance);
   return (
     <div>
       <h4 className="my-2 text-center fw-bold section-title">

@@ -4,14 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@noble/secp256k1": "^2.1.0",
-    "@scure/base": "^1.1.9",
+    "@scure/base": "^1.2.1",
     "@scure/bip32": "^1.5.0",
     "@scure/bip39": "^1.4.0",
     "@scure/btc-signer": "^1.4.0",
@@ -21,6 +21,7 @@
     "borsher": "^3.5.0",
     "buffer": "^6.0.3",
     "lodash": "^4.17.21",
+    "micro-packed": "^0.7.0",
     "qrcode.react": "^4.1.0",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.5",
