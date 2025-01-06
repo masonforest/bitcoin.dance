@@ -1,11 +1,57 @@
 import { sample } from "lodash";
 import * as borsh from "borsh";
+import * as secp256k1 from "@noble/secp256k1";
 import { bech32, bech32m } from "@scure/base";
 import { BorshSchema, borshSerialize, borshDeserialize, Unit } from "borsher";
 import {utils as packedUtils} from 'micro-packed';
 import { sha256 } from "@noble/hashes/sha256";
 const { concatBytes } = packedUtils;
 const MAGIC_PREFIX = new Uint8Array([79, 96, 186])
+export const transactionSchema = BorshSchema.Struct({
+  nonce: BorshSchema.i64,
+  transaction: BorshSchema.Enum({
+    Transfer: BorshSchema.Struct({
+      currency: BorshSchema.Enum({
+        Usd: BorshSchema.Unit,
+      }),
+      to: BorshSchema.Enum({
+       BitcoinAddress:BorshSchema.String, 
+       StableAddress: BorshSchema.Array(BorshSchema.u8, 17),
+      }),
+      value: BorshSchema.i64,
+    }),
+    ClaimUtxo: BorshSchema.Struct({
+      currency: BorshSchema.Enum({
+        Usd: BorshSchema.Unit,
+      }),
+      transaction_id: BorshSchema.Array(BorshSchema.u8, 32),
+      vout: BorshSchema.i32,
+    }),
+  }),
+});
+export const signedTransactionSchema = BorshSchema.Struct({
+  transaction: BorshSchema.Enum({
+    Transfer: BorshSchema.Struct({
+      currency: BorshSchema.Enum({
+        Usd: BorshSchema.Unit,
+      }),
+      to: BorshSchema.Enum({
+       BitcoinAddress:BorshSchema.String, 
+       StableAddress: BorshSchema.Array(BorshSchema.u8, 17),
+      }),
+      value: BorshSchema.i64,
+    }),
+    ClaimUtxo: BorshSchema.Struct({
+      currency: BorshSchema.Enum({
+        Usd: BorshSchema.Unit,
+      }),
+      transaction_id: BorshSchema.Array(BorshSchema.u8, 32),
+      vout: BorshSchema.i32,
+    }),
+  }),
+  nonce: BorshSchema.i64,
+  signature: BorshSchema.Array(BorshSchema.u8, 65),
+});
 function bech32AddressToBytes(address) {
   const decoded = bech32.decode(address);
   const hrp = decoded.prefix;
@@ -16,6 +62,14 @@ function bech32AddressToBytes(address) {
   // console.log(witnessProgramWords.length);
   return bech32.fromWords(witnessProgramWords);
 }
+
+export function addressToObject(address) {
+  if (address.startsWith("bc1qfast")) {
+    return {StableAddress: bech32AddressToBytes(address).slice(-17)}
+  } else {
+    return {BitcoinAddress: address}
+  }
+} 
 
 export function pubKeyToBytes(publicKey) {
   // console.log("pubkey:"+ Buffer.from(publicKey).toString("hex"))
@@ -38,18 +92,18 @@ export function pubKeyToAddress(publicKey, witnessVersion = 0) {
   return bech32.encode("bc", words);
 } 
 
-const transactionSchema = BorshSchema.Enum({
-  Utxo: BorshSchema.Struct({
-    transaction_id: BorshSchema.Array(BorshSchema.u8, 32),
-    vout: BorshSchema.i32,
-    value: BorshSchema.i64,
-  }),
-  Withdraw: BorshSchema.Struct({
-    nonce: BorshSchema.i64,
-    to_bitcoin_address: BorshSchema.String,
-    value: BorshSchema.i64,
-  }),
-});
+// const transactionSchema = BorshSchema.Enum({
+//   Utxo: BorshSchema.Struct({
+//     transaction_id: BorshSchema.Array(BorshSchema.u8, 32),
+//     vout: BorshSchema.i32,
+//     value: BorshSchema.i64,
+//   }),
+//   Withdraw: BorshSchema.Struct({
+//     nonce: BorshSchema.i64,
+//     to_bitcoin_address: BorshSchema.String,
+//     value: BorshSchema.i64,
+//   }),
+// });
 export default class StableNetwork {
   constructor({ peers, development = false}) {
     if (development) {
@@ -97,7 +151,36 @@ export default class StableNetwork {
     );
   }
 
-  postTransaction(transaction) {
+  async postTransaction(transaction, privateKey) {
+    const transactionAndNonce = {
+      nonce: 2,
+      transaction
+    };
+    const serliaizedTransaction = borshSerialize(
+      transactionSchema,
+      transactionAndNonce,
+    );
+    // console.log(Buffer.from(serliaizedTransaction).toString("hex"))
+    const signature = secp256k1.sign(
+      sha256(serliaizedTransaction),
+      privateKey,
+    );
+    let serialized = borshSerialize(signedTransactionSchema, {
+      transaction: transactionAndNonce.transaction,
+      nonce: transactionAndNonce.nonce,
+      signature: secp256k1.etc.concatBytes(
+        signature.toCompactRawBytes(),
+        new Uint8Array([signature.recovery]),
+      ),
+    });
+    let response = await this.postRawTransaction(serialized);
+    
+    // console.log(Buffer.from(response).toString("hex"))
+    const responseSchema = { array: { type: 'u8', len: 32 }}
+    return borsh.deserialize(responseSchema, response)
+  }
+
+  postRawTransaction(transaction) {
     return this.post("/transactions", transaction);
   }
 

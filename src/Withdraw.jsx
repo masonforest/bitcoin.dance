@@ -58,7 +58,6 @@ const transactionSchema = BorshSchema.Enum({
   Transfer: BorshSchema.Struct({
     nonce: BorshSchema.i64,
     currency: BorshSchema.Enum({
-      Snt: BorshSchema.Unit,
       Usd: BorshSchema.Unit,
     }),
     to: BorshSchema.Array(BorshSchema.u8, 33),
