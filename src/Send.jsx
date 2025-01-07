@@ -24,19 +24,23 @@ function Send({ address, usdBalance, privateKey }) {
   const send = useCallback((event) => {
     event.preventDefault();
     (async () => {
-    //   console.log(addressToObject(recipientAddress));
-      setTransactionId(
-        await stable.postTransaction(
-          {
-            Transfer: {
-              currency: { Usd: {} },
-              to: addressToObject(recipientAddress),
-              value: Math.round(parseFloat(value * 100)),
-            },
+      //   console.log(addressToObject(recipientAddress));
+      let newTransactionId = await stable.postTransaction(
+        {
+          Transfer: {
+            currency: { Usd: {} },
+            to: addressToObject(recipientAddress),
+            value: Math.round(parseFloat(value * 100)),
           },
-          privateKey,
-        ),
+        },
+        privateKey,
       );
+
+      if (!recipientAddress.startsWith("bc1qfast")) {
+        setTransactionId(newTransactionId);
+      }
+      setRecipientAddress("");
+      setValue("");
     })();
   });
   return (

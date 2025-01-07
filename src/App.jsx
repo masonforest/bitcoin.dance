@@ -83,10 +83,11 @@ function App() {
         HDKey.fromMasterSeed(
           base64urlnopad.decode(window.location.hash.slice(1)),
         ).derive("m/84'/0'/0");
-      let toEntropy = localStorage.entropy ? new Uint8Array(Buffer.from(localStorage.entropy, "base64")) : randomBytes(16) 
-      const { publicKey } = HDKey.fromMasterSeed(
-        toEntropy,
-      ).derive("m/84'/0'/0");
+      let toEntropy = localStorage.entropy
+        ? new Uint8Array(Buffer.from(localStorage.entropy, "base64"))
+        : randomBytes(16);
+      const { publicKey } =
+        HDKey.fromMasterSeed(toEntropy).derive("m/84'/0'/0");
       let value = await stable.getBalance(
         pubKeyToBytes(temporaryPublicKey),
         "usd",
@@ -96,7 +97,7 @@ function App() {
         transaction: {
           Transfer: {
             currency: { Usd: {} },
-            to: {StableAddress:pubKeyToBytes(publicKey)},
+            to: { StableAddress: pubKeyToBytes(publicKey) },
             value,
           },
         },
@@ -205,7 +206,7 @@ function App() {
       transaction: {
         Transfer: {
           currency: { Usd: {} },
-          to: {StableAddress: pubKeyToBytes(temporaryPublicKey)},
+          to: { StableAddress: pubKeyToBytes(temporaryPublicKey) },
           value,
         },
       },
